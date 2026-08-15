@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/app/styles/main.css">
+    <title>Lista de tareas</title>
+</head>
+<body>
+    <h1>Lista de tareas</h1>
+        <form class="subir-formulario" id="form-crear-tarea">
+            <div class="captura-tarea">
+                <label for="tarea">Tarea<input type="text" name="tarea" id="tarea" ></label>
+                <label for="descripcion">Descripcion<input type="text" name="descripcion" id="descripcion" ></label>
+            </div>
+            <button class="boton-crear-tarea">Crear una tarea nueva</button>
+        </form>
+    <div class="contenedor-tarea-creada">
+        
+    </div>
+
+    <div class="contenedor-tareas">
+        <h2>Todas las tareas</h2>
+    </div>
+
+    <script src="/app/js/interface.js" type="module"></script>
+</body>
+</html>
