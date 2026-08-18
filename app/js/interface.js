@@ -3,6 +3,7 @@ import {nuevaTarea, eliminarTarea, editarTarea, mostrarTarea, mostrarTareas} fro
 const formCrearTarea = document.querySelector('#form-crear-tarea');
 const contenedorTareaCreada = document.querySelector('.contenedor-tarea-creada');
 const contenedorTareas = document.querySelector('.contenedor-tareas');
+const botonMostrarAll = document.querySelector('.boton-historial-tareas');
 
 formCrearTarea.addEventListener('submit', (event)=>{
     event.preventDefault()
@@ -34,7 +35,7 @@ formCrearTarea.addEventListener('submit', (event)=>{
         </div>
     `
     contenedorTareas.innerHTML += `
-        <div class="tarea" id="${respuesta.id_tarea}">
+        <div class="tarea" data-id="${respuesta.id_tarea}">
             <p>ID: ${respuesta.id_tarea}</p>
             <p>Tarea: ${respuesta.nombre_tarea}</p>
             <p>Descripcion: ${respuesta.descripcion_tarea}</p>
@@ -50,11 +51,31 @@ formCrearTarea.addEventListener('submit', (event)=>{
     }
 
     const botonEliminarTarea = document.querySelector(".boton-eliminar-tarea");
-
-    botonEliminarTarea.addEventListener("click", (event)=>{
-        event.preventDefault();
-        eliminarTarea(respuesta.id_tarea);
-
+    
+    contenedorTareas.addEventListener("click", (event)=>{
+        if(event.target.className === "boton-eliminar-tarea"){
+            const idBorrarTarea = parseInt(event.target.parentElement.getAttribute('data-id'))
+            const tarjeta = document.querySelector(`[data-id="${idBorrarTarea}"]`)
+            tarjeta.remove();
+            eliminarTarea(idBorrarTarea);
+        }
+        return;
     })
 
+})
+
+botonMostrarAll.addEventListener('click', () => {
+
+    const respuestaAll = mostrarTareas();
+    console.log(respuestaAll);
+
+
+    contenedorTareas.innerHTML = `
+        <div class="tarea" data-id="${respuestaAll.Tarea.id_tarea}">
+            <p>ID: ${respuestaAll.id_tarea}</p>
+            <p>Tarea: ${respuestaAll.nombre_tarea}</p>
+            <p>Descripcion: ${respuestaAll.descripcion_tarea}</p>
+            <button class="boton-eliminar-tarea">Eliminar tarea</button>
+        </div>
+    `
 })

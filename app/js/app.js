@@ -69,11 +69,10 @@ export function editarTarea(idTarea, cambios){
 //Muestra todas las tareas 
 export function mostrarTareas(){
     if(listaTareas.length === 0){
-        console.log("No hay tareas para mostrar.")
-        return; 
+        return "No hay tareas para mostrar."; 
     } else {
         console.log(`Tareas disponibles: ${listaTareas.length}`)
-        console.table(listaTareas);
+        return listaTareas;
     }
 }
 
@@ -86,6 +85,7 @@ export function mostrarTarea(idTarea){
     if(tarea){
         console.log("Tarea encontrada");
         console.table(tarea)
+        return tarea;
     } else {
         console.log("No existe la tarea.");
     }
