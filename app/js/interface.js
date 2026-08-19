@@ -1,9 +1,15 @@
-import {nuevaTarea, eliminarTarea, editarTarea, mostrarTarea, mostrarTareas} from './app.js'
+import {nuevaTarea, eliminarTarea, editarTarea, mostrarTarea, mostrarTareas, consultarTotalTareas} from './app.js'
 
 const formCrearTarea = document.querySelector('#form-crear-tarea');
 const contenedorTareaCreada = document.querySelector('.contenedor-tarea-creada');
 const contenedorTareas = document.querySelector('.contenedor-tareas');
 const botonMostrarAll = document.querySelector('.boton-historial-tareas');
+const labelTotalTareas = document.querySelector('.label-total-tareas')
+
+const totalTareas = consultarTotalTareas()
+labelTotalTareas.innerHTML = `
+    <p>${totalTareas}</p>
+`
 
 formCrearTarea.addEventListener('submit', (event)=>{
     event.preventDefault()
@@ -28,20 +34,23 @@ formCrearTarea.addEventListener('submit', (event)=>{
 
     contenedorTareaCreada.innerHTML = `
         <div class="tarea">
-            <h2>Ultima tarea creada</h2>
             <p>ID: ${respuesta.id_tarea}</p>
             <p>Tarea: ${respuesta.nombre_tarea}</p>
             <p>Descripcion: ${respuesta.descripcion_tarea}</p>
         </div>
     `
     contenedorTareas.innerHTML += `
-        <div class="tarea" data-id="${respuesta.id_tarea}">
+        <div class="tarea tarea-estilos" data-id="${respuesta.id_tarea}">
             <p>ID: ${respuesta.id_tarea}</p>
             <p>Tarea: ${respuesta.nombre_tarea}</p>
             <p>Descripcion: ${respuesta.descripcion_tarea}</p>
-            <button>Editar tarea</button>
+            <button class="">Editar tarea</button>
             <button class="boton-eliminar-tarea">Eliminar tarea</button>
         </div>
+    `
+    const totalTareas = consultarTotalTareas()
+    labelTotalTareas.innerHTML = `
+        <p>${totalTareas}</p>
     `
     
     if (respuesta === undefined){
@@ -58,24 +67,15 @@ formCrearTarea.addEventListener('submit', (event)=>{
             const tarjeta = document.querySelector(`[data-id="${idBorrarTarea}"]`)
             tarjeta.remove();
             eliminarTarea(idBorrarTarea);
+            
+            const totalTareas = consultarTotalTareas()
+            labelTotalTareas.innerHTML = `
+                <p>${totalTareas}</p>
+            `
         }
         return;
     })
 
 })
 
-botonMostrarAll.addEventListener('click', () => {
 
-    const respuestaAll = mostrarTareas();
-    console.log(respuestaAll);
-
-
-    contenedorTareas.innerHTML = `
-        <div class="tarea" data-id="${respuestaAll.Tarea.id_tarea}">
-            <p>ID: ${respuestaAll.id_tarea}</p>
-            <p>Tarea: ${respuestaAll.nombre_tarea}</p>
-            <p>Descripcion: ${respuestaAll.descripcion_tarea}</p>
-            <button class="boton-eliminar-tarea">Eliminar tarea</button>
-        </div>
-    `
-})

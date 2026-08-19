@@ -4,10 +4,66 @@ body{
     color: #ffffff;
 }
 
+.main{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.formulario{
+    background-color: #383838;
+    border: #ffffff 1px solid;
+    min-width: 95%;
+    height: auto;
+    border-radius: 10px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.captura-tarea{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.intput-estilos{/*Estilos para los inputs del formulario para crear la tarea*/
+    border-radius: 5px;
+    border: #ffffff 1px solid;
+
+    margin: 1rem;
+     text-align: center;
+}
+
+.btn-estilos{/*Estilos para el botón de crear tarea*/
+    border-radius: 10px;
+    font-size: 1.5rem;
+    margin: 2rem;
+}
+
+
 .contenedor-tarea-creada{
     background-color: #545454;
+    min-width: 95%;
+    min-height: auto;
+    border-radius: 5px;
+
 }
 .tarea{
     text-align: center;
     color: aliceblue;
 }
+
+.contenedor-tareas-estilos{/* Estilos donde contenedor donde se almacenan todas las tareas creadas */
+    min-width: 90%;
+    min-height: auto;
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+}
+.tarea-estilos{/* Estilos de las tareas mostradas en zona de todas las tareas */
+    background-color: #4c5e4b;
+    border-radius: 5px;
+    margin: 8px;
+    padding: 5px;
+}
+

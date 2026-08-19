@@ -7,21 +7,25 @@
     <title>Lista de tareas</title>
 </head>
 <body>
-    <h1>Lista de tareas</h1>
-        <form class="subir-formulario" id="form-crear-tarea">
-            <div class="captura-tarea">
-                <label for="tarea">Tarea<input type="text" name="tarea" id="tarea" ></label>
-                <label for="descripcion">Descripcion<input type="text" name="descripcion" id="descripcion" ></label>
-            </div>
-            <button class="boton-crear-tarea">Crear una tarea nueva</button>
-        </form>
-        <button class="boton-historial-tareas">Historial de tareas</button>
-    <div class="contenedor-tarea-creada">
-        
-    </div>
-
-    <div class="contenedor-tareas">
+    <div class="main">
+        <h1>Lista de tareas</h1>
+        <p>Total de tareas: </p><div class="label-total-tareas"></div>
+            <form class="subir-formulario formulario" id="form-crear-tarea">
+                <div class="captura-tarea">
+                    <label for="tarea">Tarea<input type="text" name="tarea" id="tarea" class="intput-estilos"></label>
+                    <label for="descripcion">Descripcion<input type="text" name="descripcion" id="descripcion" class="intput-estilos"></label>
+                </div>
+                <button class="boton-crear-tarea btn-estilos">Crear una tarea nueva</button>
+            </form>
+            <!-- <button class="boton-historial-tareas">Historial de tareas</button> -->
+        <h2>Ultima tarea creada</h2>
+        <div class="contenedor-tarea-creada"><!-- Contenedor de almacenamiento de la ultima tarea creada -->
+            
+        </div>
         <h2>Todas las tareas</h2>
+        <div class="contenedor-tareas contenedor-tareas-estilos"><!-- Contenedor donde se agregan todas las tareas y se muestran -->
+            
+        </div>
     </div>
 
     <script src="/app/js/interface.js" type="module"></script>

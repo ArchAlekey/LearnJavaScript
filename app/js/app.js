@@ -91,6 +91,14 @@ export function mostrarTarea(idTarea){
     }
 }
 
+export function consultarTotalTareas(){
+
+    const totalTareas = listaTareas.length;
+    if(totalTareas === 0){
+        return "No hay tareas pendientes"
+    }
+    return totalTareas
+}
 /*
 nuevaTarea("Gimnasio", "Ir al gimnasio");
 nuevaTarea("Reset de correo Telcel", "Mandar correo y mantener el seguimiento para la restauración de mi correo.")

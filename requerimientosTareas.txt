@@ -1,0 +1,488 @@
+Estoy construyendo un proyecto personal en JavaScript para aprender programación de manera práctica. El proyecto comenzó como una lista de tareas (To-Do List) ejecutada inicialmente desde Node.js y posteriormente decidí convertirla en una pequeña aplicación web utilizando JavaScript vanilla, HTML y CSS.
+
+IMPORTANTE SOBRE LA FORMA DE ENSEÑARME:
+Quiero aprender y comprender el código, no solamente copiarlo. Por eso, NO quiero que me entregues directamente la solución completa cuando exista un problema o una nueva funcionalidad.
+
+Prefiero que:
+- Me expliques el concepto.
+- Me hagas preguntas o pequeños retos.
+- Me indiques qué parte de mi razonamiento es correcta o incorrecta.
+- Me des pistas progresivas.
+- Me permitas intentar la implementación.
+- Revisemos mi código después.
+- Si existe un error, explícame por qué ocurre antes de mostrarme una solución.
+- Evita adelantarte demasiado y mostrarme funcionalidades que todavía no estamos trabajando.
+
+Quiero construir el proyecto progresivamente, entendiendo primero JavaScript, DOM, eventos, objetos, arrays, funciones y posteriormente conceptos más avanzados.
+
+==================================================
+OBJETIVO GENERAL DEL PROYECTO
+==================================================
+
+Construir una aplicación web sencilla de gestión de tareas.
+
+La aplicación debe permitir:
+
+1. Crear tareas.
+2. Asignar automáticamente un ID único a cada tarea.
+3. Mostrar la última tarea creada.
+4. Mostrar todas las tareas creadas.
+5. Eliminar tareas.
+6. Editar tareas.
+7. Posteriormente posiblemente agregar estados a las tareas.
+8. Eventualmente separar mejor la lógica de datos de la interfaz.
+9. En una etapa posterior, poder conectar este proyecto a un backend y una base de datos.
+
+Actualmente el proyecto funciona únicamente en el navegador y mantiene las tareas en memoria mediante un array de JavaScript.
+
+==================================================
+ESTRUCTURA ACTUAL
+==================================================
+
+Tenemos una clase Tarea:
+
+export class Tarea {
+
+    constructor(id_tarea, nombre_tarea, descripcion_tarea){
+
+        this.id_tarea = id_tarea;
+        this.nombre_tarea = nombre_tarea;
+        this.descripcion_tarea = descripcion_tarea;
+
+    }
+
+}
+
+Tenemos un archivo app.js que contiene la lógica principal de las tareas.
+
+Actualmente tenemos:
+
+const listaTareas = [];
+let actualId = 0;
+
+La variable listaTareas almacena los objetos Tarea.
+
+actualId mantiene el último ID generado.
+
+La decisión de diseño es que los IDs NO se reciclen.
+
+Por ejemplo:
+
+Tarea 1
+Tarea 2
+Tarea 3
+
+Si elimino la tarea 3:
+
+Tarea 1
+Tarea 2
+
+La siguiente tarea debe ser:
+
+Tarea 4
+
+NO debe volver a utilizarse el ID 3.
+
+Esto se decidió pensando en que posteriormente la aplicación podría conectarse a una base de datos, donde los identificadores deberían ser únicos y no depender de las posiciones actuales del array.
+
+Por esa razón, el ID se genera automáticamente y el usuario NO tiene control sobre él.
+
+La función de creación actualmente sigue esta lógica:
+
+function nuevaTarea(nombreTarea, descripcionTarea){
+
+    validar datos;
+
+    actualId = actualId + 1;
+
+    const tarea = new Tarea(
+        actualId,
+        nombreTarea,
+        descripcionTarea
+    );
+
+    listaTareas.push(tarea);
+
+    return tarea;
+}
+
+También existe:
+
+eliminarTarea(idTarea)
+
+Esta función busca la tarea mediante findIndex(), obtiene su índice y utiliza splice() para eliminarla del array.
+
+La razón para usar findIndex() aquí es que splice() necesita el índice del elemento que queremos eliminar.
+
+Para buscar una tarea individual utilizamos find():
+
+const tarea = listaTareas.find(
+    tarea => tarea.id_tarea === idTarea
+);
+
+Esto devuelve el objeto encontrado, no su posición.
+
+==================================================
+EDITAR TAREA
+==================================================
+
+Una de las partes más importantes que trabajamos fue diseñar editarTarea().
+
+Inicialmente utilizábamos parámetros posicionales:
+
+editarTarea(idTarea, nuevoNombreTarea, nuevaDescripcionTarea)
+
+Pero detectamos un problema:
+
+Si solamente quería modificar la descripción, tenía que respetar la posición de los parámetros.
+
+Por ejemplo, resultaba incómodo tener que indicar:
+
+editarTarea(1, undefined, "Nueva descripción")
+
+Además, el proyecto podría crecer y posteriormente tener más propiedades.
+
+Por eso decidimos utilizar un objeto como parámetro:
+
+editarTarea(1, {
+    name: "Nuevo nombre",
+    description: "Nueva descripción"
+})
+
+Esto permite modificar solamente los campos necesarios.
+
+Por ejemplo:
+
+editarTarea(1, {
+    name: "Nuevo nombre"
+})
+
+debe modificar únicamente el nombre.
+
+Y:
+
+editarTarea(1, {
+    description: "Nueva descripción"
+})
+
+debe modificar únicamente la descripción.
+
+La función actual tiene aproximadamente esta lógica:
+
+function editarTarea(idTarea, cambios){
+
+    const tarea = listaTareas.find(
+        tarea => tarea.id_tarea === idTarea
+    );
+
+    if(!tarea){
+        console.log("La tarea no existe");
+        return;
+    }
+
+    if(cambios.name === null || cambios.description === null){
+        console.log("Alguno de los campos es invalido.");
+        return;
+    }
+
+    if(cambios.name !== undefined && cambios.name !== ""){
+        tarea.nombre_tarea = cambios.name;
+    }
+
+    if(cambios.description !== undefined && cambios.description !== ""){
+        tarea.descripcion_tarea = cambios.description;
+    }
+
+    return tarea;
+}
+
+La idea conceptual es:
+
+- idTarea siempre identifica la tarea.
+- El ID nunca se modifica.
+- null significa que el campo recibido es inválido y debe detener la operación.
+- undefined significa que ese campo no fue enviado y no debe modificarse.
+- "" significa que no se desea modificar ese campo.
+- Un texto válido significa que ese campo sí debe modificarse.
+- Un objeto vacío no modifica nada.
+
+Todavía queremos mejorar y robustecer esta función posteriormente, pero por ahora funciona con los escenarios principales.
+
+==================================================
+HTML ACTUAL
+==================================================
+
+Tenemos un formulario similar a:
+
+<form class="subir-formulario" id="form-crear-tarea">
+
+    <div class="captura-tarea">
+
+        <label for="tarea">
+            Tarea
+            <input type="text" name="tarea" id="tarea">
+        </label>
+
+        <label for="descripcion">
+            Descripcion
+            <input
+                type="text"
+                name="descripcion"
+                id="descripcion"
+            >
+        </label>
+
+    </div>
+
+    <button class="boton-crear-tarea">
+        Crear una tarea nueva
+    </button>
+
+</form>
+
+<div class="contenedor-tarea-creada">
+</div>
+
+<div class="contenedor-tareas">
+</div>
+
+==================================================
+ENVÍO DEL FORMULARIO
+==================================================
+
+Utilizamos:
+
+formCrearTarea.addEventListener('submit', (event) => {
+
+    event.preventDefault();
+
+    ...
+
+});
+
+Aprendimos que event.preventDefault() evita el comportamiento predeterminado del formulario, que normalmente provocaría el envío y recarga de la página.
+
+También aprendimos que:
+
+event.target
+
+representa el elemento que originó el evento.
+
+En el caso del submit:
+
+event.target
+
+es el formulario.
+
+Por eso podemos acceder a:
+
+event.target.elements.tarea.value
+
+y:
+
+event.target.elements.descripcion.value
+
+para obtener los valores de los inputs.
+
+Actualmente validamos que nombre y descripción tengan contenido antes de crear la tarea.
+
+==================================================
+CREACIÓN VISUAL DE LAS TAREAS
+==================================================
+
+Cuando nuevaTarea() devuelve el objeto creado, usamos su información para construir HTML mediante innerHTML.
+
+Para la última tarea creada utilizamos:
+
+contenedorTareaCreada.innerHTML = `...`;
+
+Esto reemplaza el contenido anterior y muestra únicamente la última tarea creada.
+
+Para todas las tareas utilizamos:
+
+contenedorTareas.innerHTML += `...`;
+
+Esto permite ir agregando nuevas tarjetas visualmente.
+
+Cada tarjeta tiene actualmente una estructura similar a:
+
+<div class="tarea" data-id="${respuesta.id_tarea}">
+
+    <p>ID: ${respuesta.id_tarea}</p>
+    <p>Tarea: ${respuesta.nombre_tarea}</p>
+    <p>Descripcion: ${respuesta.descripcion_tarea}</p>
+
+    <button>
+        Editar tarea
+    </button>
+
+    <button class="boton-eliminar-tarea">
+        Eliminar tarea
+    </button>
+
+</div>
+
+El atributo data-id es importante porque permite asociar la tarjeta HTML con el objeto correspondiente de listaTareas.
+
+==================================================
+ELIMINAR TAREA DESDE LA INTERFAZ
+==================================================
+
+Actualmente ya conseguimos implementar la eliminación visual y lógica.
+
+Al principio intenté utilizar:
+
+document.querySelector(".boton-eliminar-tarea")
+
+pero descubrimos que querySelector() solamente devuelve el primer elemento que coincide.
+
+Como las tarjetas se crean dinámicamente, decidimos utilizar delegación de eventos.
+
+En lugar de agregar un listener individual a cada botón, colocamos un único listener en:
+
+contenedorTareas
+
+Por ejemplo:
+
+contenedorTareas.addEventListener("click", (event) => {
+
+    ...
+
+});
+
+Aprendimos que aunque el listener esté en el contenedor, event.target indica el elemento específico que recibió el click.
+
+Por ejemplo:
+
+event.target
+
+puede ser el botón:
+
+<button class="boton-eliminar-tarea">
+
+También aprendimos que los eventos pueden propagarse desde los elementos hijos hacia sus elementos padres, lo que permite utilizar delegación de eventos.
+
+Para evitar que cualquier click dentro de la tarjeta elimine la tarea, validamos:
+
+event.target.className === "boton-eliminar-tarea"
+
+Solo si se cumple esa condición continuamos.
+
+Después obtenemos la tarjeta padre:
+
+event.target.parentElement
+
+y desde ella obtenemos:
+
+data-id
+
+mediante:
+
+getAttribute('data-id')
+
+IMPORTANTE:
+getAttribute() devuelve el valor como string.
+
+Por ejemplo:
+
+"2"
+
+pero nuestra función eliminarTarea() trabaja con IDs numéricos.
+
+Por eso convertimos:
+
+parseInt(idBorrarTarea)
+
+Después hacemos dos operaciones:
+
+1. Eliminar el objeto del array:
+
+eliminarTarea(parseInt(idBorrarTarea));
+
+2. Eliminar la representación visual:
+
+tarjeta.remove();
+
+Actualmente también utilizamos mostrarTareas() para comprobar desde consola que el objeto realmente fue eliminado.
+
+==================================================
+ESTADO ACTUAL DEL PROYECTO
+==================================================
+
+Actualmente podemos:
+
+✓ Crear tareas.
+✓ Validar nombre y descripción.
+✓ Generar IDs automáticamente.
+✓ Mantener IDs únicos y no reciclables.
+✓ Guardar tareas en listaTareas.
+✓ Mostrar la última tarea creada.
+✓ Mostrar todas las tareas.
+✓ Asociar cada tarjeta HTML con su ID mediante data-id.
+✓ Detectar clicks mediante delegación de eventos.
+✓ Identificar específicamente el botón de eliminar.
+✓ Obtener la tarjeta correspondiente.
+✓ Obtener el ID correspondiente.
+✓ Eliminar la tarea del array.
+✓ Eliminar la tarjeta del DOM.
+
+==================================================
+LO QUE FALTA
+==================================================
+
+La siguiente gran funcionalidad que queremos implementar es:
+
+1. Mejorar la eliminación para hacerla más robusta.
+2. Resolver correctamente qué ocurre con "Última tarea creada" cuando se elimina esa tarea.
+   - Si elimino una tarea intermedia, la última tarea creada debe mantenerse.
+   - Si elimino precisamente la última tarea creada, queremos limpiar esa zona.
+3. Implementar EDITAR TAREA desde la interfaz.
+4. Crear una interacción para modificar nombre y/o descripción.
+5. Mantener sincronizados listaTareas y el DOM.
+6. Posteriormente agregar estados a las tareas.
+   Posibles estados futuros:
+   - activo
+   - inactivo
+   - incompleto
+   - en proceso
+   - asignada
+   etc.
+7. Eventualmente mejorar la arquitectura del proyecto.
+8. En una etapa posterior, podría conectarse con un backend y una base de datos.
+
+==================================================
+FORMA DE TRABAJAR
+==================================================
+
+Quiero continuar aprendiendo mediante pequeños retos.
+
+NO me entregues inmediatamente el código completo de la siguiente funcionalidad.
+
+Primero explícame el problema y ayúdame a dividirlo en pasos.
+
+Cuando yo proponga una solución:
+- dime si mi razonamiento es correcto;
+- señala errores conceptuales;
+- explícame por qué ocurre un problema;
+- dame pistas;
+- deja que yo implemente la solución.
+
+Si estoy aprendiendo un concepto nuevo como:
+- DOM
+- eventos
+- delegación de eventos
+- objetos
+- arrays
+- find()
+- findIndex()
+- parentElement
+- data attributes
+- innerHTML
+- remove()
+- etc.
+
+explícamelo de forma progresiva y con ejemplos pequeños antes de utilizarlo en el proyecto.
+
+No quiero solamente terminar la aplicación: quiero entender por qué funciona cada parte.
+
+El proyecto debe crecer de manera progresiva, como si fuera un proyecto real, pero manteniendo inicialmente JavaScript vanilla y sin introducir frameworks innecesarios.
